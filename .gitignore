@@ -1,0 +1,20 @@
+# Python, Node, Java build artifacts (дополнительно по языку)
+__pycache__/
+*.pyc
+node_modules/
+build/
+dist/
+
+# Docker volumes
+volumes/
+*.log
+
+# Postgres data
+postgres_data/
+*.pid
+*.sock
+
+# VSCode & OS
+.vscode/
+.DS_Store
+.env
