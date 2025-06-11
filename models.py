@@ -24,4 +24,12 @@ class Task(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     owner_id = Column(Integer, ForeignKey("users.id"))
 
-    owner = relationship("User", back_populates="tasks") 
+    owner = relationship("User", back_populates="tasks")
+
+class NewsItem(Base):
+    __tablename__ = "news_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    link = Column(String)
+    fetched_at = Column(DateTime, default=datetime.utcnow) 

@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI, Depends, HTTPException, status, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from typing import List
 import uvicorn
 from datetime import timedelta
+import uuid
 
 from database import get_db, engine
 import models
@@ -16,6 +17,7 @@ from auth import (
     create_access_token,
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
+from chat import handle_chat
 
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
@@ -144,6 +146,15 @@ def delete_task(
     db.delete(db_task)
     db.commit()
     return {"message": "Task deleted successfully"}
+
+@app.websocket("/ws/chat/{client_id}")
+async def websocket_endpoint(websocket: WebSocket, client_id: str):
+    await handle_chat(websocket, client_id)
+
+@app.get("/news/")
+def get_news(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
+    news_items = db.query(models.NewsItem).offset(skip).limit(limit).all()
+    return news_items
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
